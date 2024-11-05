@@ -1,6 +1,8 @@
-import mongose from "mongose";
+import  jwt from "jsonwebtoken";
+import mongoose from "mongoose";
+import validator from "validator";
 
-const schema=new mongose.Schema({
+const schema=new mongoose.Schema({
     name:{
         type:String,
         required:[true,"Please enter your name"],
@@ -31,7 +33,7 @@ const schema=new mongose.Schema({
         url:{type:String,required:true},
     },
     playlist:[{
-        course:{type:mongose.Schema.Types.ObjectId,ref:"Course"},
+        course:{type:mongoose.Schema.Types.ObjectId,ref:"Course"},
         poster:String,
     }],
     createdAt:{
@@ -43,4 +45,10 @@ const schema=new mongose.Schema({
     ResetPasswordExpire:String,
 });
 
-export const User=mongose.model("User",schema);
+schema.methods.getJWTToken=function (){
+    return jwt.sign({_id:this._id},process.env.JWT_SECRET,{
+        expiresIn:"15d"
+    })
+}
+
+export const User=mongoose.model("User",schema);
